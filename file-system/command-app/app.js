@@ -3,6 +3,9 @@ const fs = require("fs/promises");
 (async () => {
   // commands
   const CREATE_FILE = "create a file";
+  const DELETE_FILE = "delete a file";
+  const RENAME_FILE = "rename a file";
+  const ADD_TO_FILE = "write to a file";
 
   // Create file function
   const createFile = async (path) => {
@@ -17,8 +20,42 @@ const fs = require("fs/promises");
         console.log("A new file was successfully created!");
         newFileHandle.close();
       } else {
-        console.error("An unexpected error occurred:", error);
+        console.error("An unexpected error occurred: ", error);
       }
+    }
+  };
+
+  // Delete file function
+  const deleteFile = async (path) => {
+    try {
+      await fs.rm(path);
+      return console.log(`The file ${path} was removed.`);
+    } catch (error) {
+      if (error.code === "ENOENT") {
+        return console.log("No such file or it's already been removed.");
+      } else {
+        console.error("An unexpected error occurred: ", error);
+      }
+    }
+  };
+
+  // Write to a File
+  const addToFile = async (path, content) => {
+    try {
+      const contentToAdd = content.slice(1).join(" ");
+      await fs.appendFile(path, " " + contentToAdd);
+      console.log(`Successfully added content to the file ${path}.`);
+    } catch (error) {
+      console.log("An unexpected error occurred: " + error);
+    }
+  };
+
+  const renameFile = async (oldPath, newPath) => {
+    try {
+      await fs.rename(oldPath, newPath);
+      console.log("File renamed successfully.");
+    } catch (error) {
+      console.log("An Unexpected error occurred: " + error);
     }
   };
 
@@ -42,12 +79,7 @@ const fs = require("fs/promises");
     const position = 0;
 
     // Reding content of the file
-    const content = await commandFileHandler.read(
-      buff,
-      offset,
-      length,
-      position
-    );
+    await commandFileHandler.read(buff, offset, length, position);
 
     /* decoder gets 0´s 1´s => returns meaningful
      encoder gets meaningful => 0´s 1´s*/
@@ -56,18 +88,36 @@ const fs = require("fs/promises");
     if (command.includes(CREATE_FILE)) {
       const filePath = command.substring(CREATE_FILE.length + 1).trim();
       createFile(filePath);
+    } else if (command.includes(DELETE_FILE)) {
+      const filePath = command.substring(DELETE_FILE.length + 1).trim();
+      deleteFile(filePath);
+    } else if (command.includes(RENAME_FILE)) {
+      const str = command.substring(RENAME_FILE.length + 1).trim();
+      const arr = str.split(" ");
+      const oldPath = arr[0];
+      const newPath = arr[1];
+      renameFile(oldPath, newPath);
+    } else if (command.includes(ADD_TO_FILE)) {
+      const str = command.substring(ADD_TO_FILE.length + 1).trim();
+      const arr = str.split(" ");
+      const path = arr[0];
+      addToFile(path, arr);
     }
-
-    // Create a file:
-    // Create a file <path>
   });
 
+  let debounceTimeout;
   const watcher = fs.watch("./command.txt");
 
   // watcher...
   for await (const event of watcher) {
     if (event.eventType === "change") {
-      commandFileHandler.emit("change");
+      // Clear the previous timer if a new event arrise earlier
+      clearTimeout(debounceTimeout);
+
+      // Set new timer to emit a new event after 100ms
+      debounceTimeout = setTimeout(() => {
+        commandFileHandler.emit("change");
+      }, 100);
     }
   }
 })();

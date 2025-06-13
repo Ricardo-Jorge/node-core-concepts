@@ -1,1 +1,1 @@
-create a file text.txt
+write to a file file.txt 123456
