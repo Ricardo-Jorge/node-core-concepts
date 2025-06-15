@@ -1,1 +1,1 @@
-write to a file file.txt 123456
+delete the file text.txt 

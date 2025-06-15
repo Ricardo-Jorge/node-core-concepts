@@ -3,9 +3,9 @@ const fs = require("fs/promises");
 (async () => {
   // commands
   const CREATE_FILE = "create a file";
-  const DELETE_FILE = "delete a file";
-  const RENAME_FILE = "rename a file";
-  const ADD_TO_FILE = "write to a file";
+  const DELETE_FILE = "delete the file";
+  const RENAME_FILE = "rename the file";
+  const ADD_TO_FILE = "add to the file";
 
   // Create file function
   const createFile = async (path) => {
@@ -17,7 +17,7 @@ const fs = require("fs/promises");
       // we don´t have the file, now we have to create it
       if (error.code === "ENOENT") {
         const newFileHandle = await fs.open(path, "w");
-        console.log("A new file was successfully created!");
+        console.log(`A new file ${path} was successfully created!`);
         newFileHandle.close();
       } else {
         console.error("An unexpected error occurred: ", error);
@@ -39,23 +39,25 @@ const fs = require("fs/promises");
     }
   };
 
+  // Rename a File
+  const renameFile = async (oldPath, newPath) => {
+    try {
+      await fs.rename(oldPath, newPath);
+      console.log(`File ${oldPath} renamed to ${newPath} successfully.`);
+    } catch (error) {
+      console.log("An Unexpected error occurred: " + error);
+    }
+  };
+
   // Write to a File
   const addToFile = async (path, content) => {
     try {
       const contentToAdd = content.slice(1).join(" ");
       await fs.appendFile(path, " " + contentToAdd);
       console.log(`Successfully added content to the file ${path}.`);
+      console.log(`Content: ${contentToAdd}`);
     } catch (error) {
       console.log("An unexpected error occurred: " + error);
-    }
-  };
-
-  const renameFile = async (oldPath, newPath) => {
-    try {
-      await fs.rename(oldPath, newPath);
-      console.log("File renamed successfully.");
-    } catch (error) {
-      console.log("An Unexpected error occurred: " + error);
     }
   };
 
@@ -78,7 +80,7 @@ const fs = require("fs/promises");
     // Where to begin reading data from the file
     const position = 0;
 
-    // Reding content of the file
+    // Reading content of the file
     await commandFileHandler.read(buff, offset, length, position);
 
     /* decoder gets 0´s 1´s => returns meaningful
