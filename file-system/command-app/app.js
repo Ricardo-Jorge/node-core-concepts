@@ -28,6 +28,9 @@ const fs = require("fs/promises");
   // Delete file function
   const deleteFile = async (path) => {
     try {
+      if (path === "command.txt") {
+        return console.log(`Not allowed to delete the file ${path}.`);
+      }
       await fs.rm(path);
       return console.log(`The file ${path} was removed.`);
     } catch (error) {
@@ -42,6 +45,9 @@ const fs = require("fs/promises");
   // Rename a File
   const renameFile = async (oldPath, newPath) => {
     try {
+      if (oldPath === "command.txt") {
+        return console.log(`Not allowed to rename the file ${oldPath}.`);
+      }
       await fs.rename(oldPath, newPath);
       console.log(`File ${oldPath} renamed to ${newPath} successfully.`);
     } catch (error) {
