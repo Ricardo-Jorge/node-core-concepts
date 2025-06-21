@@ -47,7 +47,7 @@ const fs = require("fs/promises");
 
 (async () => {
   console.time("writeMany");
-  const fileHandle = await fs.open("text.txt", "w");
+  const fileHandle = await fs.open("test.txt", "w");
 
   const stream = fileHandle.createWriteStream();
   // console.log(stream.writableHighWaterMark);
@@ -63,8 +63,10 @@ const fs = require("fs/promises");
   // });
   let i = 0;
 
+  const numbersOfWrite = 100;
+
   const writeMany = () => {
-    while (i < 1000000) {
+    while (i < numbersOfWrite) {
       const buff = Buffer.from(` ${i} `, "utf-8");
       i++;
 
