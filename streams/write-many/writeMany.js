@@ -63,7 +63,7 @@ const fs = require("fs/promises");
   // });
   let i = 0;
 
-  const numbersOfWrite = 100;
+  const numbersOfWrite = 1000000;
 
   const writeMany = () => {
     while (i < numbersOfWrite) {
@@ -86,7 +86,6 @@ const fs = require("fs/promises");
 
   // resume our loop if the stream's buffer is empty
   stream.on("drain", () => {
-    console.log("Drained!!!");
     writeMany();
   });
 
