@@ -30,7 +30,7 @@ class FileWriteStream extends Writable {
   // The underscope before the name of the function is to not override the parent method
   _write(chunk, encoding, callback) {
     this.chunks.push(chunk);
-    this.chunksSize += this.chunks.length;
+    this.chunksSize += chunk.length;
 
     if (this.chunksSize > this.writableHighWaterMark) {
       fs.write(this.fd, Buffer.concat(this.chunks), (err) => {
@@ -53,6 +53,7 @@ class FileWriteStream extends Writable {
     fs.write(this.fd, Buffer.concat(this.chunks), (err) => {
       if (err) return callback(err);
 
+      ++this.writesCount;
       this.chunks = [];
       callback();
     });
@@ -93,7 +94,6 @@ class FileWriteStream extends Writable {
   const writeMany = () => {
     while (i < numbersOfWrite) {
       const buff = Buffer.from(` ${i} `, "utf-8");
-      i++;
 
       // This is the last write, so we close the fileHandle and print the process time on the console
       if (i === numbersOfWrite - 1) {
@@ -104,17 +104,21 @@ class FileWriteStream extends Writable {
       if (!stream.write(buff)) {
         break;
       }
+      i++;
     }
   };
 
   writeMany();
 
+  let d = 0;
   // resume our loop if the stream's buffer is empty
   stream.on("drain", () => {
+    ++d;
     writeMany();
   });
 
   stream.on("finish", () => {
+    console.log("Numbers of drains:", d);
     console.timeEnd("writeMany");
   });
 })();
