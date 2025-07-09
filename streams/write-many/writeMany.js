@@ -63,7 +63,7 @@ const fs = require("fs/promises");
   // });
   let i = 0;
 
-  const numbersOfWrite = 1000000;
+  const numbersOfWrite = 10000000;
 
   const writeMany = () => {
     while (i < numbersOfWrite) {
@@ -71,11 +71,11 @@ const fs = require("fs/promises");
       i++;
 
       // This is the last write, so we close the fileHandle and print the process time on the console
-      if (i === 999999) {
+      if (i === numbersOfWrite) {
         return stream.end(buff);
       }
 
-      // Breake out of the loop if the stream is filled
+      // Break out of the loop if the stream is filled
       if (!stream.write(buff)) {
         break;
       }
