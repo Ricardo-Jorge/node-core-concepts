@@ -12,8 +12,27 @@ server.on("request", (request, response) => {
   console.log("========== HEADERS: ==========");
   console.log(request.headers);
 
+  console.log("========== BODY: ==========");
+
+  const name = request.headers.name;
+
+  let data = "";
   request.on("data", (chunk) => {
-    console.log(chunk.toString("utf-8"));
+    data += chunk.toString();
+  });
+
+  request.on("end", () => {
+    data = JSON.parse(data);
+
+    console.log(data);
+    console.log(name);
+
+    response.writeHead(200, { "Content-Type": "application/json" });
+    response.end(
+      JSON.stringify({
+        message: `Hey ${name}, your post with title: ${data.title}, was created`,
+      })
+    );
   });
 });
 
