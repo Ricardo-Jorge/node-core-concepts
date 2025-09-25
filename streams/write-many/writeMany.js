@@ -63,7 +63,7 @@ const fs = require("fs/promises");
   // });
   let i = 0;
 
-  const numbersOfWrite = 10000000;
+  const numbersOfWrite = 100000000;
 
   const writeMany = () => {
     while (i < numbersOfWrite) {
